@@ -8,42 +8,48 @@ const loader = document.getElementById("loader");
 let apiQuotes = [];
 
 //show loader
-function loading() {
+function showLoadingSpinner() {
     loader.hidden = false;
     quoteContainer.hidden = true;
 }
 
 //hide loader
-function complete() {
-    loader.hidden = true;
-    quoteContainer.hidden = false;
+function removeLoadingSpinner() {
+    if (!loader.hidden) {
+        loader.hidden = true;
+        quoteContainer.hidden = false;
+    }
 }
 
 //Show New Quote
 function newQuote() {
-    loading();
-    //Picking Random Quote From API Array
-    const quote = apiQuotes[Math.floor(Math.random() * apiQuotes.length)];
-    //Check if author field is blank
-    if (!quote.author) {
-        authorText.textContent = "Unknown";
-    } else {
-        authorText.textContent = quote.author;
+    try {
+        showLoadingSpinner();
+        //Picking Random Quote From API Array
+        const quote = apiQuotes[Math.floor(Math.random() * apiQuotes.length)];
+        //Check if author field is blank
+        if (!quote.author) {
+            authorText.textContent = "Unknown";
+        } else {
+            authorText.textContent = quote.author;
+        }
+        //Check quote length to determine the styling
+        if (quote.text.length > 100) {
+            quoteText.classList.add("long-quote");
+        } else {
+            quoteText.classList.remove("long-quote");
+        }
+        //setting Quote, Hide Loader
+        quoteText.textContent = quote.text;
+        removeLoadingSpinner();
+    } catch (error) {
+        console.log(err);
     }
-    //Check quote length to determine the styling
-    if (quote.text.length > 100) {
-        quoteText.classList.add("long-quote");
-    } else {
-        quoteText.classList.remove("long-quote");
-    }
-    //setting Quote, Hide Loader
-    quoteText.textContent = quote.text;
-    complete();
 }
 
 //Get Quotes From API
 async function getQuotes() {
-    loading();
+    showLoadingSpinner();
     const apiUrl = "https://type.fit/api/quotes";
     try {
         const response = await fetch(apiUrl);
